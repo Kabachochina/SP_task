@@ -1,0 +1,11 @@
+Test adversarial_cnn_epoch_2_eps_0.1_steps_10_step_size_0.02 and cnn_epoch_2:
+Protected model:
+Adversarial test Accuracy: 93.32%
+Test Accuracy: 98.64%
+adv CI: [0.894, 0.972]
+nat CI: [0.968, 1.005]
+Natural model:
+Adversarial test Accuracy: 70.85%
+Test Accuracy: 98.90%
+adv CI: [0.637, 0.780]
+nat CI: [0.973, 1.005]
