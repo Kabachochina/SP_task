@@ -14,10 +14,11 @@ class Attack:
         logits = self.model(x)
         return F.cross_entropy(logits, y)
 
-    def perturb(self,
-                images : torch.Tensor,
-                labels : torch.Tensor
-                ) -> torch.Tensor:
+    def perturb(
+            self,
+            images : torch.Tensor,
+            labels : torch.Tensor
+            ) -> torch.Tensor:
         if self.rand:
             x = images + torch.empty_like(images).uniform_(-self.epsilon, self.epsilon)
             x = torch.clamp(x, 0, 1)

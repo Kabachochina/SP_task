@@ -31,19 +31,12 @@ def load_test_model(device, loss_fn, test_dataloader):
     test_loop(test_dataloader, loaded_model, loss_fn, device)
 
 
-def save_attacked_images(dataloader, model, device, save_dir, data_path):
+def save_attacked_images(dataloader, model, device, save_dir, attack, data_path):
     model.eval()
     os.makedirs(save_dir, exist_ok=True)
 
     all_paths = []
     all_labels = []
-    attack = Attack(
-        model=model,
-        epsilon=0.3,
-        steps=100,
-        step_size=0.01,
-        random_start=False
-    )
 
     for batch_idx, (images, labels) in enumerate(dataloader):
         images = images.to(device)
