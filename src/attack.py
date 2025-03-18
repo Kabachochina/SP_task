@@ -1,8 +1,19 @@
 import torch
 import torch.nn.functional as F
+from torch import nn
+
+from src.model import ConvNet
+
 
 class Attack:
-    def __init__(self, model, epsilon, steps, step_size, random_start):
+    def __init__(
+            self,
+            model : nn.Module,
+            epsilon : float,
+            steps : int,
+            step_size : float,
+            random_start : bool = False
+    ):
         self.model = model
         self.epsilon = epsilon
         self.steps = steps
@@ -18,7 +29,7 @@ class Attack:
             self,
             images : torch.Tensor,
             labels : torch.Tensor
-            ) -> torch.Tensor:
+    ) -> torch.Tensor:
         if self.rand:
             x = images + torch.empty_like(images).uniform_(-self.epsilon, self.epsilon)
             x = torch.clamp(x, 0, 1)

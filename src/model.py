@@ -15,7 +15,7 @@ class ConvNet(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
         self.drop_out = nn.Dropout()
-        self.fc1 = nn.Linear(7 * 7 * 64, 1000)
+        self.fc1 = nn.Linear(7 * 7 * 64, 1000) # act func
         self.fc2 = nn.Linear(1000, 10)
 
     def forward(self, x):

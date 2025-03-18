@@ -1,37 +1,43 @@
 import os
+from typing import Callable
 
 import torch
 import torchvision
 
 import torchvision.utils as vutils
+from torch import nn
 from torch.utils.data import DataLoader
 
 from src.attack import Attack
 from src.custom_dataset import CustomDataset
-from src.model import ConvNet
-from src.train import train_loop, test_loop, adversarial_test_loop
+from src.train import train_loop, test_loop
 
 import math
 from scipy import stats
 
 
-def save_model(model, path):
+def save_model(
+        model : nn.Module,
+        path : str
+):
     torch.save(model.state_dict(), path)
 
 
-def load_model(model, path):
+def load_model(
+        model : nn.Module,
+        path : str
+):
     model.load_state_dict(torch.load(path))
 
 
-def load_test_model(device, loss_fn, test_dataloader):
-    # Загрузка и тестирование сохранённой модели
-    loaded_model = ConvNet().to(device)
-    load_model(loaded_model, path='../saved_models/cnn.ckpt')
-
-    test_loop(test_dataloader, loaded_model, loss_fn, device)
-
-
-def save_attacked_images(dataloader, model, device, save_dir, attack, data_path):
+def save_attacked_images(
+        dataloader : DataLoader,
+        model : nn.Module,
+        device : torch.device,
+        save_dir : str,
+        attack : Attack,
+        data_path : str
+):
     model.eval()
     os.makedirs(save_dir, exist_ok=True)
 
@@ -61,7 +67,10 @@ def save_attacked_images(dataloader, model, device, save_dir, attack, data_path)
         }, data_path)
 
 
-def load_attacked_dataset(data_path, batch_size=64):
+def load_attacked_dataset(
+        data_path : str,
+        batch_size : int = 64
+):
     data = torch.load(data_path)
     all_paths = data['paths']
     all_labels = data['labels']
@@ -79,7 +88,14 @@ def load_attacked_dataset(data_path, batch_size=64):
     return attacked_dataloader
 
 
-def train_model(model, device, loss_fn, epochs, train_dataloader, test_dataloader):
+def train_model(
+        model : nn.Module,
+        device : torch.device,
+        loss_fn : Callable,
+        epochs : int,
+        train_dataloader : DataLoader,
+        test_dataloader : DataLoader
+):
     print("Using device:", device)
 
     optimizer = torch.optim.Adam(
@@ -94,7 +110,15 @@ def train_model(model, device, loss_fn, epochs, train_dataloader, test_dataloade
         test_loop(test_dataloader, model, loss_fn, device)
 
 
-def adversarial_train_model(model, device, loss_fn, epochs, attack, train_dataloader, test_dataloader):
+def adversarial_train_model(
+        model : nn.Module,
+        device : torch.device,
+        loss_fn : Callable,
+        epochs : int,
+        attack : Attack,
+        train_dataloader : DataLoader,
+        test_dataloader : DataLoader
+):
     print("Start adversarial_training")
 
     model.to(device)
@@ -110,7 +134,11 @@ def adversarial_train_model(model, device, loss_fn, epochs, attack, train_datalo
         test_loop(test_dataloader, model, loss_fn, device)
 
 
-def confidence_interval(accuracy, count_examples, confidence=0.95):
+def confidence_interval(
+        accuracy : float,
+        count_examples : int,
+        confidence : float = 0.95
+):
     z = stats.norm.ppf((1 + confidence) / 2)
     margin = z * math.sqrt((accuracy * (1 - accuracy)) / count_examples)
     return accuracy - margin, accuracy + margin

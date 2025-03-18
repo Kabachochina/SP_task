@@ -1,9 +1,18 @@
 import torch
-
+from torch import nn
+from torch.utils.data import DataLoader
 from src.attack import Attack
+from typing import Callable
 
 
-def train_loop(dataloader, model, loss_fn, optimizer, device, attack=None):
+def train_loop(
+        dataloader : DataLoader,
+        model : nn.Module,
+        loss_fn : Callable,
+        optimizer : torch.optim,
+        device : torch.device,
+        attack : Attack = None
+):
     model.train()
     for batch, (images, labels) in enumerate(dataloader):
         images, labels = images.to(device), labels.to(device)
@@ -23,7 +32,12 @@ def train_loop(dataloader, model, loss_fn, optimizer, device, attack=None):
         if batch % 100 == 0:
             print(f"loss: {loss.item():>7f}  [{batch * len(inputs):>5d}/{len(dataloader.dataset):>5d}]")
 
-def test_loop(dataloader, model, loss_fn, device):
+def test_loop(
+        dataloader : DataLoader,
+        model : nn.Module,
+        loss_fn : Callable,
+        device : torch.device
+) -> float:
     model.eval()
     test_loss = 0
     correct = 0
@@ -40,7 +54,13 @@ def test_loop(dataloader, model, loss_fn, device):
     print(f"Test Accuracy: {(100 * accuracy):.2f}%")
     return accuracy
 
-def adversarial_test_loop(dataloader, model, loss_fn, device, attack : Attack):
+def adversarial_test_loop(
+        dataloader : DataLoader,
+        model : nn.Module,
+        loss_fn : Callable,
+        device : torch.device,
+        attack : Attack
+) -> float:
     model.eval()
     test_loss = 0
     correct = 0
